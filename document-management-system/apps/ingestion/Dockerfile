@@ -1,28 +1,28 @@
-# Stage 1: Install production dependencies
-FROM node:18-alpine AS deps
-WORKDIR /usr/src/app
+# ---- Builder ----
+FROM node:18-slim AS builder
+WORKDIR /app
 
-# Update package list and install build tools needed for some native npm packages
-RUN apk update && apk add --no-cache libc6-compat build-base python3
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential python3 && rm -rf /var/lib/apt/lists/*
 
-COPY package.json package-lock.json ./
-RUN npm install --omit=dev
+COPY package*.json ./
+COPY apps/ingestion/package*.json ./apps/ingestion/
+RUN npm install
 
-# Stage 2: Build the application
-FROM node:18-alpine AS builder
-WORKDIR /usr/src/app
-COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
-# This command builds ALL apps, which is necessary in a monorepo
-# to ensure all dependencies and libraries are correctly compiled.
-RUN npm run build
+RUN npm run build ingestion
 
-# Stage 3: Production image
-FROM node:18-alpine AS final
-WORKDIR /usr/src/app
-# Copy the built application for the 'ingestion' service
-COPY --from=builder /usr/src/app/dist/apps/ingestion .
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY package.json .
+# ---- Production deps ----
+FROM node:18-slim AS deps
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential python3 && rm -rf /var/lib/apt/lists/*
+COPY package*.json ./
+COPY apps/ingestion/package*.json ./apps/ingestion/
+RUN npm ci --only=production
 
-CMD ["node", "main.js"]
+# ---- Final ----
+FROM node:18-slim AS final
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/dist/apps/ingestion ./dist
+COPY package.json ./
+CMD ["node", "dist/main.js"]
