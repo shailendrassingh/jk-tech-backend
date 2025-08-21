@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  # --- INFRASTRUCTURE SERVICES ---
+
+  postgres:
+    image: pgvector/pgvector:pg13
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: auth_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/
+
+  # --- BACKEND MICROSERVICES ---
+
+  auth:
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile # We will create this Dockerfile next
+    container_name: auth_service
+    restart: always
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+
+  users:
+    build:
+      context: .
+      dockerfile: ./apps/users/Dockerfile # We will create this Dockerfile next
+    container_name: users_service
+    restart: always
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+
+  documents:
+    build:
+      context: .
+      dockerfile: ./apps/documents/Dockerfile # We will create this Dockerfile next
+    container_name: documents_service
+    restart: always
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres
+    volumes:
+      - ./uploads:/usr/src/app/uploads # Mount the uploads folder
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: ./apps/ingestion/Dockerfile # We will create this Dockerfile next
+    container_name: ingestion_service
+    restart: always
+    ports:
+      - "3004:3004"
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - RABBITMQ_URI=${RABBITMQ_URI}
+
+  # --- PYTHON RAG SERVICE ---
+  
+  rag_service:
+    build:
+      context: ../python-rag-service # Assumes this is the relative path
+      dockerfile: Dockerfile # We will create this Dockerfile next
+    container_name: python_rag_service
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - rabbitmq
+    volumes:
+      - ./uploads:/app/uploads # Mount the same uploads folder
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - RABBITMQ_URI=${RABBITMQ_URI}
+
+  # --- FRONTEND SERVICE ---
+
+  frontend:
+    build:
+      context: ../document-management-frontend # Assumes this is the relative path
+      dockerfile: Dockerfile
+    container_name: angular_frontend
+    restart: always
+    ports:
+      - "4200:80" # Map host port 4200 to container port 80
+
+volumes:
+  postgres_data:
+  rabbitmq_data:

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/document-management-system/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/document-management-system/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/document-management-system",
+  "projects": {
+    "document-management-system": {
+      "type": "application",
+      "root": "apps/document-management-system",
+      "entryFile": "main",
+      "sourceRoot": "apps/document-management-system/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/document-management-system/tsconfig.app.json"
+      }
+    },
+    "auth-service": {
+      "type": "application",
+      "root": "apps/auth-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/auth-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/auth-service/tsconfig.app.json"
+      }
+    },
+    "users-service": {
+      "type": "application",
+      "root": "apps/users-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-service/tsconfig.app.json"
+      }
+    },
+    "documents-service": {
+      "type": "application",
+      "root": "apps/documents-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/documents-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/documents-service/tsconfig.app.json"
+      }
+    },
+    "ingestion-service": {
+      "type": "application",
+      "root": "apps/ingestion-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/ingestion-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ingestion-service/tsconfig.app.json"
+      }
+    },
+    "users": {
+      "type": "application",
+      "root": "apps/users",
+      "entryFile": "main",
+      "sourceRoot": "apps/users/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users/tsconfig.app.json"
+      }
+    },
+    "auth": {
+      "type": "application",
+      "root": "apps/auth",
+      "entryFile": "main",
+      "sourceRoot": "apps/auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/auth/tsconfig.app.json"
+      }
+    },
+    "ingestion": {
+      "type": "application",
+      "root": "apps/ingestion",
+      "entryFile": "main",
+      "sourceRoot": "apps/ingestion/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ingestion/tsconfig.app.json"
+      }
+    },
+    "documents": {
+      "type": "application",
+      "root": "apps/documents",
+      "entryFile": "main",
+      "sourceRoot": "apps/documents/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/documents/tsconfig.app.json"
+      }
+    },
+    "common": {
+      "type": "library",
+      "root": "libs/common",
+      "entryFile": "index",
+      "sourceRoot": "libs/common/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common/tsconfig.lib.json"
+      }
+    },
+    "config": {
+      "type": "library",
+      "root": "libs/config",
+      "entryFile": "index",
+      "sourceRoot": "libs/config/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/config/tsconfig.lib.json"
+      }
+    }
+  }
+}
