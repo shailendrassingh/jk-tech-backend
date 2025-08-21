@@ -2,6 +2,8 @@
 
 This monorepo contains the backend microservices for the Document Management and RAG Q&A application. It includes services for authentication, user management, document handling, and ingestion, all designed to work together in a containerized environment.
 
+![Application Architecture Diagram](DFD.svg)
+
 ## Architecture Overview
 
 The backend consists of four NestJS microservices and one Python service for RAG processing.
