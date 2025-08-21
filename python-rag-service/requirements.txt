@@ -1,0 +1,22 @@
+For RabbitMQ connection
+pika
+
+For environment variables
+python-dotenv
+
+For interacting with PostgreSQL and vectors
+psycopg2-binary
+pgvector
+
+For reading PDF and Word documents
+pypdf
+python-docx
+
+For language models and embeddings (Sentence Transformers is great for local use)
+sentence-transformers
+torch
+transformers
+
+For creating the API (optional, but good for Q&A endpoint)
+fastapi
+uvicorn
